@@ -17,23 +17,25 @@ with DockerCommandLineCodeExecutor(work_dir=work_dir) as code_executor:
     )
 
 
+# Holds configuration parameters for LLM
 config_list_unit_test_writer = [
     {
-        "model": "NULL", # Loaded with LiteLLM command
-        "api_key": "NULL",
+        "model": "NULL", # Model is set when running LiteLLM command
+        "api_key": "NULL", # Not required if running locally
         "base_url": "http://0.0.0.0:4000"  # LiteLLM URL
     }
 ]
 
+# LLM Configuration
 local_llm_config={
     "config_list": config_list_unit_test_writer,
-    "cache_seed": None # Turns off caching, useful for testing different models
+    "cache_seed": None # Disables caching, useful for testing different models without interference from previous results
 }
 
 # LLM-based agent
 assistant = ConversableAgent(
     name="Unit Test Writer",
-    system_message="You are a software engineer that tests all functions in a given program."
+    system_message="You are a quality assurance engineer that tests all functions in a given program."
     "The user will provide the code and functions for you to test."
     "You must write code to thoroughly (including edge cases) test each function."
     "You will print out the code for each unit test."
