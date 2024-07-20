@@ -33,7 +33,7 @@ local_llm_config={
 }
 
 # LLM-based agent
-assistant = ConversableAgent(
+test_writer = ConversableAgent(
     name="Unit Test Writer",
     system_message="You are a quality assurance engineer that tests all functions in a given program."
     "The user will provide the code and functions for you to test."
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     if __name__=="__main__":
         # Assistant starts conversation. Ends when user types 'exit'.
-        assistant.initiate_chat(user_proxy, message="How can I help you today?")
+        test_writer.initiate_chat(user_proxy, message="How can I help you today?")
 
 
     # Prompt: Write a python script to test each function of the following code:

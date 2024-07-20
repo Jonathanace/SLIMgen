@@ -13,7 +13,7 @@ local_llm_config={
 }
 
 # Create the agent that uses the LLM.
-assistant = autogen.AssistantAgent(
+requirement_writer = autogen.AssistantAgent(
     name="requirements agent",
     system_message="You are a systems engineer. The user tells you what they want their code to do"
     "and you write requirements for that code before that code is written."
@@ -27,5 +27,5 @@ if __name__ == "__main__":
     user_proxy = UserProxyAgent("user", code_execution_config=False)
 
     # Let the assistant start the conversation.  It will end when the user types exit.
-    assistant.initiate_chat(user_proxy, message="How can I help you today?")
+    requirement_writer.initiate_chat(user_proxy, message="How can I help you today?")
     # Prompt: I need a Python class called calculator that can do addition and subtraction of two numbers.
