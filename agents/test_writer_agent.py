@@ -5,6 +5,9 @@ from autogen import UserProxyAgent, ConversableAgent
 from pathlib import Path
 from autogen.coding import DockerCommandLineCodeExecutor
 
+from configs import local_llm_config
+
+
 
 # Docker implementation
 work_dir = Path("coding")
@@ -25,12 +28,6 @@ config_list_unit_test_writer = [
         "base_url": "http://0.0.0.0:4000"  # LiteLLM URL
     }
 ]
-
-# LLM Configuration
-local_llm_config={
-    "config_list": config_list_unit_test_writer,
-    "cache_seed": None # Disables caching, useful for testing different models without interference from previous results
-}
 
 # LLM-based agent
 test_writer = ConversableAgent(

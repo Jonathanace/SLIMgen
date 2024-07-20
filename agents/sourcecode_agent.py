@@ -1,16 +1,6 @@
 import autogen
 from autogen import UserProxyAgent, ConversableAgent
-
-local_llm_config={
-    "config_list": [
-        {
-            "model": "NotRequired", # Loaded with LiteLLM command
-            "api_key": "NotRequired", # Not needed
-            "base_url": "http://0.0.0.0:4000"  # Your LiteLLM URL
-        }
-    ],
-    "cache_seed": None # Turns off caching, useful for testing different models
-}
+from configs import local_llm_config
 
 # Create the agent that uses the LLM.
 # assistant = ConversableAgent("agent", llm_config=local_llm_config)
