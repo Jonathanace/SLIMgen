@@ -43,16 +43,17 @@ assistant = ConversableAgent(
     llm_config=local_llm_config,
 )
 
-# User agent
-user_proxy = UserProxyAgent("user", code_execution_config=False)
+if __name__ == "__main__":
+    # User agent
+    user_proxy = UserProxyAgent("user", code_execution_config=False)
 
 
-if __name__=="__main__":
-    # Assistant starts conversation. Ends when user types 'exit'.
-    assistant.initiate_chat(user_proxy, message="How can I help you today?")
+    if __name__=="__main__":
+        # Assistant starts conversation. Ends when user types 'exit'.
+        assistant.initiate_chat(user_proxy, message="How can I help you today?")
 
 
-# Prompt: Write a python script to test each function of the following code:
+    # Prompt: Write a python script to test each function of the following code:
 
-# Additional Prompt: Here is the code, please write a comprehensive set of unit tests to test all the functions: class Calculator:
-#   def add(a, b):      return a + b   def subtract(a, b):      return a - bdef main():   a=int(input("Enter a: "))   b=int(input("Enter b: "))   print(Calculator.add(a,b))   print(Calculator.subtract(a,b))if __name__ == "__main__":    main()
+    # Additional Prompt: Here is the code, please write a comprehensive set of unit tests to test all the functions: class Calculator:
+    #   def add(a, b):      return a + b   def subtract(a, b):      return a - bdef main():   a=int(input("Enter a: "))   b=int(input("Enter b: "))   print(Calculator.add(a,b))   print(Calculator.subtract(a,b))if __name__ == "__main__":    main()
