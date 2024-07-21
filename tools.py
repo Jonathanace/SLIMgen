@@ -10,7 +10,7 @@ def code_reader(file_path: str) -> str:
     return code
 
 ### Tests
-def test_code_reader(file_path='examples/calculator.py'):
+def test_code_reader():
     # Let's first define the assistant agent that suggests tool calls.
     assistant = ConversableAgent(
         name="Assistant",
