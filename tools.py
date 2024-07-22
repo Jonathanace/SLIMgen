@@ -10,7 +10,7 @@ def code_reader(file_path: str) -> str:
     return code
 
 ### Tests
-def test_code_reader(file_path='examples/calculator.py'):
+def test_code_reader():
     # Let's first define the assistant agent that suggests tool calls.
     assistant = ConversableAgent(
         name="Assistant",
@@ -36,7 +36,7 @@ def test_code_reader(file_path='examples/calculator.py'):
     # Register the tool function with the user proxy agent.
     user_proxy.register_for_execution(name="code_reader")(code_reader)
 
-    chat_result = user_proxy.initiate_chat(assistant, message="Show me the code found in examples/calculator.py", clear_history=True, silent=False)
+    chat_result = user_proxy.initiate_chat(assistant, message=None, clear_history=True, silent=False)
 
     return 
 
