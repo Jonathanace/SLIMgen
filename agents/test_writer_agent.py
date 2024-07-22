@@ -33,7 +33,7 @@ local_llm_config={
 }
 
 # LLM-based agent
-assistant = ConversableAgent(
+testwrite_agent = ConversableAgent(
     name="Unit Test Writer",
     system_message="You are a quality assurance engineer that tests all functions in a given program."
     "The user will provide the code and functions for you to test."
@@ -41,6 +41,9 @@ assistant = ConversableAgent(
     "You will print out the code for each unit test."
     "You will run the written code and test each function thoroughly.",
     llm_config=local_llm_config,
+    description="""I am **ONLY** allowed to speak **immediately** after `User` and 'Code Agent'.
+If `User` asks to generate test code given source code provided by 'Code Agent', the next speaker must be `Unit Test Writer`.
+"""
 )
 
 # User agent
@@ -49,7 +52,7 @@ user_proxy = UserProxyAgent("user", code_execution_config=False)
 
 if __name__=="__main__":
     # Assistant starts conversation. Ends when user types 'exit'.
-    assistant.initiate_chat(user_proxy, message="How can I help you today?")
+    testwrite_agent.initiate_chat(user_proxy, message="How can I help you today?")
 
 
 # Prompt: Write a python script to test each function of the following code:
