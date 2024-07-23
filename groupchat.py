@@ -70,7 +70,7 @@ def groupchat2():
 
     user_proxy.initiate_chat(
         manager,
-        message="Calcultor that can do all the basic math functions",
+        message="Generate me requirements for a calculator that can do all the basic math functions",
         clear_history=True
     )
 
