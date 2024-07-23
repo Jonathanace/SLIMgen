@@ -1,6 +1,6 @@
 import os
 from autogen import ConversableAgent
-from configs import local_llm_config
+from configs import llama_groq_config
 import pprint
 
 ### Tools
@@ -17,7 +17,7 @@ def test_code_reader():
         system_message="You are a helpful AI assistant. "
         "You can help with reading local files. "
         "Return 'TERMINATE' when the task is done.",
-        llm_config=local_llm_config,
+        llm_config=llama_groq_config,
         max_consecutive_auto_reply=1
     )
 
