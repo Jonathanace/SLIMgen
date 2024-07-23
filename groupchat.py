@@ -1,5 +1,5 @@
 import autogen
-from configs import local_llm_config
+from configs import *
 from agents import *
 
 def groupchat():
@@ -11,7 +11,7 @@ def groupchat():
         system_message="Give the task, and send "
         "instructions to writer to refine the blog post.",
         code_execution_config=False,
-        llm_config=local_llm_config,
+        llm_config=codellama_config,
         human_input_mode="ALWAYS",
     )
 
@@ -29,16 +29,13 @@ def groupchat():
     )
 
     manager = autogen.GroupChatManager(
-        groupchat=groupchat, llm_config=local_llm_config
+        groupchat=groupchat, llm_config=codellama_config
     )
 
     groupchat_result = user_proxy.initiate_chat(
         manager,
         message=task
     )
-
-
-
 
 if __name__ == "__main__": 
     groupchat()
