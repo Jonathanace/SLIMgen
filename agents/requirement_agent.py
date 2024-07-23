@@ -10,9 +10,7 @@ requirement_writer = autogen.AssistantAgent(
     "You will list out these requirements in a numbered list."
     "You will not write the code, you will only write the requirements.",
     llm_config=llama_2_config,
-    description="""I am **ONLY** allowed to speak **immediately** after `User`.
-    If `User` asks to generate requirements, the next speaker must be `requirements agent`.
-    """
+    #description="I am responsible for writing the requirements"
 )
 
 if __name__ == "__main__":
