@@ -1,6 +1,8 @@
 import autogen
 from configs import *
 from agents import *
+from autogen import UserProxyAgent, ConversableAgent
+from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
 
 def groupchat():
     task = "Write a blogpost about the stock price performance of"\
@@ -29,13 +31,16 @@ def groupchat():
     )
 
     manager = autogen.GroupChatManager(
-        groupchat=groupchat, llm_config=codellama_config
+        groupchat=groupchat, llm_config=llama_2_config
     )
 
     groupchat_result = user_proxy.initiate_chat(
         manager,
         message=task
     )
+
+
+
 
 if __name__ == "__main__": 
     groupchat()
