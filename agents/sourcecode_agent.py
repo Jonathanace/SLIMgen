@@ -14,7 +14,10 @@ source_code_writer = autogen.AssistantAgent(
     "Respond only with the code and the comments within the code."
     "Make sure all the requirements are satisfied by the code you write."
     "Do not respond with text, respond with only code.",
-    llm_config=llama_2_config
+    llm_config=llama_2_config,
+    description="""I am **ONLY** allowed to speak **immediately** after `User` and 'requirements agent'.
+    If `User` asks to generate source code given requirements provided by 'requirements agent', the next speaker must be `Code Agent`.
+    """
 )
 
 if __name__ == "__main__":

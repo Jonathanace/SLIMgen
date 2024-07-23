@@ -1,5 +1,5 @@
 import autogen
-from configs import local_llm_config
+from configs import llama_2_config
 from agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
@@ -31,7 +31,7 @@ def groupchat():
     )
 
     manager = autogen.GroupChatManager(
-        groupchat=groupchat, llm_config=local_llm_config
+        groupchat=groupchat, llm_config = llama_2_config
     )
 
     groupchat_result = user_proxy.initiate_chat(
@@ -63,7 +63,7 @@ def groupchat2():
     # create the manager
     manager = GroupChatManager(
         groupchat=group_chat,
-        llm_config=local_llm_config,
+        llm_config=llama_2_config,
         is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
         code_execution_config=False,
     )
