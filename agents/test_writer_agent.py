@@ -45,9 +45,8 @@ if __name__ == "__main__":
     user_proxy = UserProxyAgent("user", code_execution_config=False)
 
 
-    if __name__=="__main__":
-        # Assistant starts conversation. Ends when user types 'exit'.
-        test_writer.initiate_chat(user_proxy, message="How can I help you today?")
+    # Assistant starts conversation. Ends when user types 'exit'.
+    test_writer.initiate_chat(user_proxy, message="How can I help you today?")
 
 
     # Prompt: Write a python script to test each function of the following code:
