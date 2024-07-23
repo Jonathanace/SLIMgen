@@ -5,7 +5,7 @@ from autogen import UserProxyAgent, ConversableAgent
 from pathlib import Path
 from autogen.coding import DockerCommandLineCodeExecutor
 
-from configs import local_llm_config
+from configs import llama_2_config
 
 
 
@@ -37,7 +37,7 @@ test_writer = ConversableAgent(
     "You must write code to thoroughly (including edge cases) test each function."
     "You will print out the code for each unit test."
     "You will run the written code and test each function thoroughly.",
-    llm_config=local_llm_config,
+    llm_config=llama_2_config,
 )
 
 if __name__ == "__main__":

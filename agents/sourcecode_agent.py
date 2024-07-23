@@ -1,6 +1,6 @@
 import autogen
 from autogen import UserProxyAgent, ConversableAgent
-from configs import local_llm_config
+from configs import llama_2_config
 
 # Create the agent that uses the LLM.
 # assistant = ConversableAgent("agent", llm_config=local_llm_config)
@@ -8,7 +8,7 @@ from configs import local_llm_config
 source_code_writer = autogen.AssistantAgent(
     name = "Code Agent",
     system_message = "Your goal is write code that satisfies the user's prompt or requirements provided. If the user provides a list of requirements, you will generate code that satisfies those requrements. If the user also provides code, you will review the provided code, change it if necessary and incorporate it with the code you write. When you write code, include brief short comments to explain necessary portions. Respond only with the code and the comments within the code. Make sure all the requirements are satisfied by the code you write. Do not respond with text, respond with only code.",
-    llm_config=local_llm_config
+    llm_config=llama_2_config
 )
 
 if __name__ == "__main__":
