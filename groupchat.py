@@ -1,5 +1,5 @@
 import autogen
-from configs import llama_2_config
+from configs import *
 from agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
@@ -13,7 +13,7 @@ def groupchat():
         system_message="Give the task, and send "
         "instructions to writer to refine the blog post.",
         code_execution_config=False,
-        llm_config=local_llm_config,
+        llm_config=codellama_config,
         human_input_mode="ALWAYS",
     )
 
@@ -31,7 +31,7 @@ def groupchat():
     )
 
     manager = autogen.GroupChatManager(
-        groupchat=groupchat, llm_config = llama_2_config
+        groupchat=groupchat, llm_config=llama_2_config
     )
 
     groupchat_result = user_proxy.initiate_chat(
@@ -78,4 +78,4 @@ def groupchat2():
 
 
 if __name__ == "__main__": 
-    groupchat2()
+    groupchat()
