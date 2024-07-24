@@ -1,6 +1,6 @@
 import os
 from autogen import ConversableAgent, register_function, GroupChat, GroupChatManager
-from configs import local_llm_config, llama_groq_config, codellama_config
+from configs import llama_groq_config, codellama_config, llama_2_config
 import pprint
 from typing_extensions import Annotated
 
@@ -42,7 +42,7 @@ def test_code_reader():
         speaker_selection_method="round_robin",
         enable_clear_history=True,
     )
-    manager = GroupChatManager(groupchat=groupchat, llm_config=local_llm_config)
+    manager = GroupChatManager(groupchat=groupchat, llm_config=llama_2_config)
 
 
 
