@@ -1,5 +1,6 @@
 import autogen
-from configs import *
+from autogen import register_function
+from configs import *, codellama_config
 from agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
@@ -7,10 +8,10 @@ from autogen.coding import DockerCommandLineCodeExecutor, LocalCommandLineCodeEx
 from typing import Dict, List
 from autogen import Agent
 
+from tools import code_reader
 
 def groupchat():
-    task = "Write a blogpost about the stock price performance of"\
-    "Nvidia in the past month. Today's date is 2024-07-20"
+    task = "Analyze the code found in examples/calculator/calculator.py"
 
     user_proxy = autogen.ConversableAgent(
         name="Admin",
@@ -20,6 +21,19 @@ def groupchat():
         llm_config=codellama_config,
         human_input_mode="ALWAYS",
     )
+
+    executor = autogen.ConversableAgent(
+        name="Executor",
+        description="Execute the code written by the engineer and  report the result.",
+        human_input_mode="NEVER",
+        code_execution_config={
+            "last_n_messages": 3,
+            "work_dir": "coding",
+            "use_docker": False
+        }
+    )
+
+
 
     groupchat = autogen.GroupChat(
         agents=[user_proxy, requirement_writer, source_code_writer, test_writer],
@@ -36,6 +50,14 @@ def groupchat():
 
     manager = autogen.GroupChatManager(
         groupchat=groupchat, llm_config=llama_2_config
+    )
+
+    register_function(
+        code_reader,
+        caller=manager,
+        executor=executor,
+        name="code_reader",
+        description="Read code from a file."
     )
 
     groupchat_result = user_proxy.initiate_chat(
