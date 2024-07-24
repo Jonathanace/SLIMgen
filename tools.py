@@ -1,9 +1,14 @@
 import os
-from autogen import ConversableAgent
-from configs import local_llm_config
+from autogen import ConversableAgent, register_function, GroupChat, GroupChatManager
+from configs import local_llm_config, llama_groq_config, codellama_config
 import pprint
+from typing_extensions import Annotated
 
 ### Tools
+def list_dir(directory: Annotated[str, "Directory to check."]):
+    files = os.listdir(directory)
+    return files
+
 def code_reader(file_path: str) -> str:
     with open(os.path.join(file_path), 'r') as file:
         code = file.read()
@@ -15,9 +20,9 @@ def test_code_reader():
     assistant = ConversableAgent(
         name="Assistant",
         system_message="You are a helpful AI assistant. "
-        "You can help with reading local files. "
-        "Return 'TERMINATE' when the task is done.",
-        llm_config=local_llm_config,
+        "You can help with reading local files. ",
+        # "Return 'TERMINATE' when the task is done.",
+        llm_config=codellama_config,
         max_consecutive_auto_reply=1
     )
 
@@ -30,13 +35,33 @@ def test_code_reader():
         human_input_mode="NEVER",
     )
 
-    # Register the tool signature with the assistant agent.
-    assistant.register_for_llm(name="code_reader", description="A simple tool to read code from a file")(code_reader)
+    groupchat = GroupChat(
+        agents=[assistant, user_proxy],
+        messages=[],
+        max_round=500,
+        speaker_selection_method="round_robin",
+        enable_clear_history=True,
+    )
+    manager = GroupChatManager(groupchat=groupchat, llm_config=local_llm_config)
 
-    # Register the tool function with the user proxy agent.
-    user_proxy.register_for_execution(name="code_reader")(code_reader)
 
-    chat_result = user_proxy.initiate_chat(assistant, message=None, clear_history=True, silent=False)
+
+    # # Register the tool signature with the assistant agent.
+    # assistant.register_for_llm(name="code_reader", description="A simple tool to read code from a file")(code_reader)
+
+    # # Register the tool function with the user proxy agent.
+    # user_proxy.register_for_execution(name="code_reader")(code_reader)
+
+    register_function(
+        code_reader,
+        caller=assistant,
+        executor=user_proxy,
+        name="code_reader",
+        description="outputs code for a given file"
+    )
+
+    # print(assistant.llm_config["tools"])
+    chat_result = user_proxy.initiate_chat(manager, message="Show me the code found in examples/calculator/calculator.py", clear_history=True, silent=False)
 
     return 
 
