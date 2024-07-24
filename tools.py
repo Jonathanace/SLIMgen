@@ -20,9 +20,9 @@ def test_code_reader():
     assistant = ConversableAgent(
         name="Assistant",
         system_message="You are a helpful AI assistant. "
-        "You can help with reading local files. ",
-        # "Return 'TERMINATE' when the task is done.",
-        llm_config=codellama_config,
+        "You can help with reading local files. "
+        "Return 'TERMINATE' when the task is done.",
+        llm_config=llama_groq_config,
         max_consecutive_auto_reply=1
     )
 

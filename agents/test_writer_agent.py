@@ -5,7 +5,7 @@ from autogen import UserProxyAgent, ConversableAgent
 from pathlib import Path
 from autogen.coding import DockerCommandLineCodeExecutor
 
-from configs import local_llm_config
+from configs import llama_2_config
 
 
 
@@ -31,13 +31,14 @@ config_list_unit_test_writer = [
 
 # LLM-based agent
 test_writer = ConversableAgent(
-    name="Unit Test Writer",
+    name="Test Code Writer",
     system_message="You are a quality assurance engineer that tests all functions in a given program."
     "The user will provide the code and functions for you to test."
     "You must write code to thoroughly (including edge cases) test each function."
     "You will print out the code for each unit test."
     "You will run the written code and test each function thoroughly.",
-    llm_config=local_llm_config,
+    llm_config=llama_2_config,
+    description = "I am responsible for writing test code. Select me as the speaker when the User asks for test code to be generated."
 )
 
 if __name__ == "__main__":
@@ -45,9 +46,8 @@ if __name__ == "__main__":
     user_proxy = UserProxyAgent("user", code_execution_config=False)
 
 
-    if __name__=="__main__":
-        # Assistant starts conversation. Ends when user types 'exit'.
-        test_writer.initiate_chat(user_proxy, message="How can I help you today?")
+    # Assistant starts conversation. Ends when user types 'exit'.
+    test_writer.initiate_chat(user_proxy, message="How can I help you today?")
 
 
     # Prompt: Write a python script to test each function of the following code:
