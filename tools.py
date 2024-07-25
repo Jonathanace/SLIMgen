@@ -1,6 +1,6 @@
 import os
 from autogen import ConversableAgent
-from configs import local_llm_config
+from configs import llama_groq_config
 import pprint
 
 ### Tools
@@ -10,14 +10,14 @@ def code_reader(file_path: str) -> str:
     return code
 
 ### Tests
-def test_code_reader(file_path='examples/calculator.py'):
+def test_code_reader():
     # Let's first define the assistant agent that suggests tool calls.
     assistant = ConversableAgent(
         name="Assistant",
         system_message="You are a helpful AI assistant. "
         "You can help with reading local files. "
         "Return 'TERMINATE' when the task is done.",
-        llm_config=local_llm_config,
+        llm_config=llama_groq_config,
         max_consecutive_auto_reply=1
     )
 
@@ -36,7 +36,7 @@ def test_code_reader(file_path='examples/calculator.py'):
     # Register the tool function with the user proxy agent.
     user_proxy.register_for_execution(name="code_reader")(code_reader)
 
-    chat_result = user_proxy.initiate_chat(assistant, message="Show me the code found in examples/calculator.py", clear_history=True, silent=False)
+    chat_result = user_proxy.initiate_chat(assistant, message=None, clear_history=True, silent=False)
 
     return 
 
