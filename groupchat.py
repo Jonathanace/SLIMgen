@@ -1,6 +1,6 @@
 import autogen
 from autogen import register_function
-from configs import *, codellama_config
+from configs import *
 from agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
@@ -84,7 +84,14 @@ def groupchat_yzhu_graph():
     agents = [user_proxy, requirement_writer, source_code_writer, test_writer]
 
     # create the groupchat
-    group_chat = GroupChat(agents=agents, messages=[], max_round=6, allowed_or_disallowed_speaker_transitions=graph_dict, allow_repeat_speaker=None, speaker_transitions_type="allowed")
+    group_chat = GroupChat(
+        agents=agents, 
+        messages=[], 
+        max_round = 6, 
+        allowed_or_disallowed_speaker_transitions=graph_dict, 
+        allow_repeat_speaker=None, 
+        speaker_transitions_type="allowed"
+    )
 
     # create the manager
     manager = GroupChatManager(
@@ -110,20 +117,100 @@ def groupchat_yzhu_cust():
         """
     )
 
+    executor = DockerCommandLineCodeExecutor(
+        image="python:3-slim",  # Execute code using the given docker image name.
+    #    timeout=10,  # Timeout for each code execution in seconds.
+        work_dir="coding",  # Use the temporary directory to store the code files.
+    )
+
+    swe_executor = ConversableAgent(
+       name="source code executor",
+    #    system_message= """
+    #    You execute the code written by the software engineer. You report the results and verify that
+    #    there are no errors in the execution. You verify that the code written by the software engineer
+    #    can run to completion without errors. If there are errors when executing the code, then you will tell the
+    #    software engineer to rewrite the code to fix those errors. Once the code runs without errors, you will
+    #    give the code to the quality assurance engineer so they can write test cases for it.
+    #    """,
+       description="""
+       Code executor that executes code written by the software engineer.
+       If there are errors with the execution, the software engineer will revise the code.
+       Once the code executes successfully with no errors, then the quality assurance speaker
+       will write test cases for it and the software engineer is NO LONGER NEEDED and can stop speaking.
+       """,
+       llm_config=False,
+       code_execution_config={
+           "executor": executor,
+       },
+       human_input_mode="NEVER",
+    )
+
+
+    test_executor = ConversableAgent(
+       name="test case executor",
+    #    system_message= """
+    #    You execute the code written by the quality assurance engineer. You report the results and verify that
+    #    there are no errors in the execution. You verify that the code written by the quality assurance engineer
+    #    can run to completion without errors. If there are errors when executing the code, then you will tell the
+    #    quality assurance engineer to rewrite the code to fix those errors. Once the code runs without errors, your job
+    #    will be finished.
+    #    """,
+       description="""
+       Code executor that executes code written by the quality assurance engineer.
+       If there are errors with the execution, the quality assurance engineer will revise the code.
+       Once the code executes successfully with no errors, then the code executor will no longer be needed.
+       """,
+       llm_config=False,
+       code_execution_config={
+           "executor": executor,
+       },
+       human_input_mode="NEVER",
+    )
+
     graph_dict = {}
-    graph_dict[user_proxy] = [requirement_writer, source_code_writer, test_writer]
-    graph_dict[requirement_writer] = [user_proxy]
-    graph_dict[source_code_writer] = [user_proxy]
-    graph_dict[test_writer] = [user_proxy]
+    graph_dict[user_proxy] = [requirement_writer, source_code_writer, test_writer, swe_executor, test_executor]
+    graph_dict[requirement_writer] = [user_proxy,source_code_writer]
+    graph_dict[source_code_writer] = [user_proxy, swe_executor]
+    graph_dict[test_writer] = [user_proxy, test_executor]
+    graph_dict[swe_executor] = [user_proxy, source_code_writer, test_writer, source_code_writer]
+    graph_dict[test_executor] = [user_proxy, test_writer]
 
-    agents = [user_proxy, requirement_writer, source_code_writer, test_writer]
+    agents = [user_proxy, requirement_writer, source_code_writer, test_writer, swe_executor, test_executor]
 
-    def custom_speaker_selection_func(last_speaker: Agent, groupchat: autogen.GroupChat):
+    def keyword_select(last_speaker: Agent, groupchat: autogen.GroupChat):
         messages = groupchat.messages
         if last_speaker is user_proxy:
             if "NXcode" in messages[-1]["content"]:
                 return source_code_writer
-            elif "NXrequirements" in messages[-1]["content"]:
+            elif "NXreq" in messages[-1]["content"]:
+                return requirement_writer
+            elif "NXtest" in messages[-1]["content"]:
+                return test_writer
+        else:
+            return user_proxy
+    
+    def auto_select(last_speaker: Agent, groupchat: autogen.GroupChat):
+        messages = groupchat.messages
+        if last_speaker is requirement_writer:
+            return source_code_writer
+        elif last_speaker is source_code_writer:
+            return swe_executor
+        elif last_speaker is swe_executor:
+            if "execution failed" in messages[-1]["content"]:
+                return source_code_writer
+            else:
+                return test_writer
+        elif last_speaker is test_writer:
+            return test_executor
+        elif last_speaker is test_executor:
+            if "execution failed" in messages[-1]["content"]:
+                return test_writer
+            else:
+                return user_proxy
+        elif last_speaker is user_proxy:
+            if "NXcode" in messages[-1]["content"]:
+                return source_code_writer
+            elif "NXreq" in messages[-1]["content"]:
                 return requirement_writer
             elif "NXtest" in messages[-1]["content"]:
                 return test_writer
@@ -132,13 +219,13 @@ def groupchat_yzhu_cust():
 
     # create the groupchat
     group_chat = GroupChat(
-        agents=agents, 
-        messages=[], 
-        max_round=6, 
-        allowed_or_disallowed_speaker_transitions=graph_dict, 
-        allow_repeat_speaker=None, 
-        speaker_transitions_type="allowed",
-        speaker_selection_method=custom_speaker_selection_func
+        agents = agents, 
+        messages = [], 
+        max_round = 30, 
+        allowed_or_disallowed_speaker_transitions = graph_dict, 
+        allow_repeat_speaker = None, 
+        speaker_transitions_type = "allowed",
+        speaker_selection_method = "manual"
     )
 
     # create the manager
@@ -151,11 +238,11 @@ def groupchat_yzhu_cust():
 
     user_proxy.initiate_chat(
         manager,
-        message="Generate me requirements for a calculator that can do all the basic math functions. NXrequirements",
+        message="Generate requirements for a Python class named \"Calculator\" with basic math functions stored in a file "
+       "named \"calculator.py\"",
         clear_history=True
     )
 
-    
 def groupchat_raul():
    user_proxy = autogen.ConversableAgent(
        name="User",
@@ -208,6 +295,11 @@ def groupchat_raul():
 
    executor = LocalCommandLineCodeExecutor(work_dir="coding")
 
+#    executor = DockerCommandLineCodeExecutor(
+#     image="python:3-slim",  # Execute code using the given docker image name.
+#     timeout=10,  # Timeout for each code execution in seconds.
+#     work_dir="coding",  # Use the temporary directory to store the code files.
+#     )
 
    swe_executor = ConversableAgent(
        name="source code executor",
@@ -295,7 +387,6 @@ def groupchat_raul():
        message="Generate requirements for a Python class named \"Calculator\" with add and subtract functions stored in a file "
        "named \"calculator.py\"",
    )
-
 
 if __name__ == "__main__": 
     groupchat_yzhu_cust()

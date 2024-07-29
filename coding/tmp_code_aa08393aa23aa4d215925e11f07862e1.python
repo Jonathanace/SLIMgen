@@ -1,0 +1,34 @@
+class Calculator:
+    def __init__(self):
+        pass
+
+    def add(self, num1, num2):
+        """Take two numbers as input and return their sum."""
+        return num1 + num2
+
+    def subtract(self, num1, num2):
+        """Take two numbers as input and return the difference between them."""
+        return num1 - num2
+
+    def multiply(self, num1, num2):
+        """Take two numbers as input and return their product."""
+        return num1 * num2
+
+    def divide(self, num1, num2):
+        """Take two numbers as input and return the quotient of dividing the second number by the first number."""
+        if num2 == 0:
+            raise ValueError("Cannot divide by zero!")
+        return num1 / num2
+
+    def sqrt(self, num):
+        """Take a single number as input and return its square root."""
+        return math.sqrt(num)
+
+    def take_input(self, message):
+        """Ask the user for input and store it in a variable."""
+        input_value = input(message)
+        return input_value
+
+    def handle_error(self, message):
+        """Display an error message to the user and ask them to try again."""
+        print(message + "Please try again!")
