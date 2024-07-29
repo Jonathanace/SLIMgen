@@ -1,0 +1,5 @@
+from calculator import Calculator
+
+calc = Calculator()
+result = calc.add(3, 5)  # returns 8
+result = calc.subtract(10, 2)  # returns 8

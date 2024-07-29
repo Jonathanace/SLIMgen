@@ -1,0 +1,57 @@
+class Calculator:
+    """
+    A simple calculator class with basic math functions.
+    """
+
+    def __init__(self):
+        pass
+
+    def add(self, x: int or float, y: int or float) -> int or float:
+        """
+        Adds two numbers.
+
+        :param x: The first number.
+        :param y: The second number.
+        :return: The sum of the two numbers.
+        """
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise CalculatorError("Invalid input type.")
+        return x + y
+
+    def subtract(self, x: int or float, y: int or float) -> int or float:
+        """
+        Subtracts two numbers.
+
+        :param x: The first number.
+        :param y: The second number.
+        :return: The difference of the two numbers.
+        """
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise CalculatorError("Invalid input type.")
+        return x - y
+
+    def multiply(self, x: int or float, y: int or float) -> int or float:
+        """
+        Multiplies two numbers.
+
+        :param x: The first number.
+        :param y: The second number.
+        :return: The product of the two numbers.
+        """
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise CalculatorError("Invalid input type.")
+        return x * y
+
+    def divide(self, x: int or float, y: int or float) -> int or float:
+        """
+        Divides two numbers.
+
+        :param x: The first number.
+        :param y: The second number.
+        :return: The result of dividing the two numbers.
+        """
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise CalculatorError("Invalid input type.")
+        if y == 0:
+            raise CalculatorError("Cannot divide by zero.")
+        return x / y
