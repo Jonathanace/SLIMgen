@@ -20,4 +20,4 @@ if __name__ == "__main__":
     )
 
     # Assistant starts conversation. Ends when user types 'exit'.
-    user_proxy.initiate_chat(tool_executor, message="Read the code from agents/sourcecode_agent.py"
+    user_proxy.initiate_chat(tool_executor, message="Read the code from agents/sourcecode_agent.py")
