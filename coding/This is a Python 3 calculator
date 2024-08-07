@@ -1,0 +1,67 @@
+# This is a Python 3 calculator
+
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    if b == 0:
+        raise ValueError("Cannot divide by zero!")
+    return a / b
+
+def modulus(a, b):
+    return a % b
+
+def square_root(a):
+    return sqrt(a)
+
+def exponential(a):
+    return 2 ** a
+
+def logarithm(a, b=1):
+    return log(a, b)
+
+def sine(a):
+    return sin(a)
+
+def cosine(a):
+    return cos(a)
+
+def tangent(a):
+    return tan(a)
+
+def negative_sign():
+    return -1
+
+def complex_number(real, imaginary):
+    return real + imaginary * I
+
+def matrix_multiply(matrix1, matrix2):
+    # Implement matrix multiplication here
+    pass
+
+def vector_addition(vector1, vector2):
+    # Implement vector addition here
+    pass
+
+def invalid_input(operation):
+    print("Invalid input! Please enter a valid mathematical operation.")
+
+# Main function
+def calculator():
+    operation = input("Enter a mathematical operation: ")
+    try:
+        result = eval(operation)
+        print(result)
+    except ValueError as e:
+        invalid_input(e)
+    except Exception as e:
+        print(f"Error: {e}. Please enter a valid mathematical operation.")
+
+# Run the calculator
+calculator()

@@ -1,0 +1,7 @@
+def test_add():
+    calculator = Calculator()
+    result1 = calculator.add(3, 4)
+    assert result1 == 7, "Error adding 3 and 4"
+
+# Run the test case
+test_add()

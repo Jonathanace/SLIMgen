@@ -1,0 +1,27 @@
+class Calculator:
+    def __init__(self):
+        pass
+
+    def add(self, num1, num2):
+        if not isinstance(num1, (int, float)) or not isinstance(num2, (int, float)):
+            raise CalculatorError("Invalid input type for addition")
+        return num1 + num2
+
+    def sub(self, num1, num2):
+        if not isinstance(num1, (int, float)) or not isinstance(num2, (int, float)):
+            raise CalculatorError("Invalid input type for subtraction")
+        return num1 - num2
+
+    def mult(self, num1, num2):
+        if not isinstance(num1, (int, float)) or not isinstance(num2, (int, float)):
+            raise CalculatorError("Invalid input type for multiplication")
+        return num1 * num2
+
+    def div(self, num1, num2):
+        if not isinstance(num1, (int, float)) or not isinstance(num2, (int, float)) or num2 == 0:
+            raise CalculatorError("Invalid input type for division")
+        return num1 / num2
+
+class CalculatorError(Exception):
+    def __init__(self, message):
+        self.message = message
