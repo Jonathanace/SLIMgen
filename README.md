@@ -21,8 +21,12 @@ Utilizing AutoGen, an open-source framework by Microsoft, to enable multi-agent 
 - Agent Collaboration: LLM agents simulate a human development team, working together to produce and validate code.
 - Retrieval-Augmented Generation (RAG): Allows agents to read and incorporate external resources into their responses.
 
-## Acknowledgments
+## Future Work
+- Increase the automation of agentic chats.
+- Implement stricter speaker selection using activation phrases in nested chats.
+- Automate cloning of GitHub repositories through tool use.
 
+## Acknowledgments
 
 This work is supported by the DS-PATH Summer Fellowship Program under the National Science Foundation Harnessing Data Revolution Data Science Corps Award #2123444, #2123271, #2123313.
 
