@@ -20,3 +20,12 @@ Utilizing AutoGen, an open-source framework by Microsoft, to enable multi-agent 
 - Code Execution: Running the generated source and test code automatically.
 - Agent Collaboration: LLM agents simulate a human development team, working together to produce and validate code.
 - Retrieval-Augmented Generation (RAG): Allows agents to read and incorporate external resources into their responses.
+
+## Acknowledgments
+
+
+This work is supported by the DS-PATH Summer Fellowship Program under the National Science Foundation Harnessing Data Revolution Data Science Corps Award #2123444, #2123271, #2123313.
+
+The work detailed in this project was made possible through AutoGen, an open-source framework from Microsoft.
+
+We would like to thank our industry mentor, Kyongsik Yun (NASA JPL), and our faculty mentors, Mariam Salloum and Analisa Flores, for their continued guidance and support throughout the program.
