@@ -4,9 +4,11 @@ from configs import llama_groq_config, llama_3_1_config
 import pprint
 from typing_extensions import Annotated
 from pathlib import Path
+from directory_tree import display_tree
+
 
 global project
-project = None
+project = None # FIXME: Should default to the current directory
 
 ### Agents
 tool_executor = ConversableAgent(
@@ -17,15 +19,17 @@ tool_executor = ConversableAgent(
     )
 
 ### Tools
-def read_code(file_path: Annotated[str, "File or path to read code from"]) -> str:
-    file_path = Path(file_path)
+def read_code(file_path: Annotated[str, "File or path to read code from."]) -> str:
+    global project
     if not project:
-        print('No project directory set.')
-        set_project(file_path.parents[0])
-    file = project / file_path.name
-    if not file:
-        raise Exception('file does not exist')
-    contents = file.read_text()
+        return 'No project directory set. Please set one and try again.'
+    file = project / file_path
+        
+    try:
+        contents = file.read_text()
+    except:
+        raise Exception('File not found.')
+
     return contents
 
 def set_project(
@@ -64,11 +68,11 @@ def check_readme()->bool:
     else:
         return 'A README file doesn\'t exist in the project directory'
 
-def walk_directory()->str:
+def show_all_files_in_dir(file_path: Annotated[str, "Directory to show files from."])->str:
     global project
     # for file in project.rglob('*'):
     #     print(read_code(file))
-    return '\n'.join([read_code(file) for file in project.rglob('*')])
+    return display_tree(file_path, string_rep=True, show_hidden=True)
 
 ### Tests
 def test_read_code():
@@ -77,14 +81,14 @@ def test_read_code():
         name="Assistant",
         system_message="You are a helpful AI assistant. "
         "You must *ALWAYS* begin by asking the user to set a project directory with set_project()"
-        "You can help with reading local files. "
-        "To set the path for the project call set_project(desired_path). "
-        "You can save or edit code for a specified file or file path but you **MUST** use the save_code tool to do so."
+        "Call show_project_files() to output all the files in the current project."
+        "Call read_code(file_path) to read code from a file. "
+        "Call set_project() to set the filepath for the current project. "
         "Call check_readme() to check if the project has a README file."
-        "Call walk_directory to output all files in a directory."
-        "Return 'TERMINATE' when the task is done.",
+        "Return 'TERMINATE' when the task is done."
+        "You can learn more about how a project works by using read_code() to read python code from a file.",
         llm_config=llama_groq_config,
-        # max_consecutive_auto_reply=1,
+        max_consecutive_auto_reply=10,
         human_input_mode="NEVER",
         code_execution_config=False
     )
@@ -119,7 +123,7 @@ def test_read_code():
         caller=assistant,
         executor=user_proxy,
         name="set_project",
-        description="A simple tool to set the project path"
+        description="A simple tool to set the project path."
     )
 
     register_function(
@@ -139,11 +143,11 @@ def test_read_code():
     )
 
     register_function(
-        walk_directory,
+        show_all_files_in_dir,
         caller=assistant,
         executor=user_proxy,
-        name="walk_directory",
-        description="Outputs all files in the project directory"
+        name="show_all_files_in_dir",
+        description="Shows all the files in a directory."
     )
 
     ### Nested chats
@@ -163,3 +167,6 @@ def test_read_code():
 
 if __name__ == '__main__':
     test_read_code()
+
+
+# FIXME: show_project_files
