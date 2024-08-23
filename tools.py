@@ -5,6 +5,7 @@ import pprint
 from typing_extensions import Annotated
 from pathlib import Path
 from directory_tree import display_tree
+from autogen import Agent, GroupChat, GroupChatManager, UserProxyAgent
 
 
 global project
@@ -18,19 +19,52 @@ tool_executor = ConversableAgent(
         is_termination_msg=True
     )
 
+# Let's first define the assistant agent that suggests tool calls.
+assistant = ConversableAgent(
+    name="Assistant",
+    system_message="You are a helpful AI assistant. "
+    # "You must *ALWAYS* begin by asking the user to set a project directory with set_project()"
+    "Call show_project_files() to output all the files in the current project."
+    "Call read_code(file_path) to read code from a file. "
+    "Call set_project() to set the filepath for the current project. "
+    "Call check_readme() to check if the project has a README file."
+    "Return 'TERMINATE' when the task is done."
+    "You can learn more about how a project works by using read_code() to read python code from a file. "
+    "If the user refers to any files, first use read_code(file_path) to get more context. ",
+    llm_config=llama_groq_config,
+    # max_consecutive_auto_reply=2,
+    human_input_mode="NEVER",
+    code_execution_config=False
+)
+
+# The user proxy agent is used for interacting with the assistant agent
+# and executes tool calls.
+user_proxy = UserProxyAgent(
+    name="User",    
+    is_termination_msg=lambda msg: msg.get("content") is not None and ("TERMINATE" in msg["content"] or "USER INPUT:" in msg["content"]),
+    human_input_mode="TERMINATE",
+    code_execution_config=False,
+    max_consecutive_auto_reply=1
+)
+
 ### Tools
 def read_code(file_path: Annotated[str, "File or path to read code from."]) -> str:
     global project
     if not project:
         return 'No project directory set. Please set one and try again.'
     file = project / file_path
-        
-    try:
-        contents = file.read_text()
-    except:
-        raise Exception('File not found.')
+    
 
-    return contents
+    try:
+        contents = Path(file_path).read_text()
+        return contents
+    except:
+        try:
+            contents = file.read_text()
+        except:
+            raise Exception('File not found.')
+
+        return contents
 
 def set_project(
         project_path: Annotated[str, "The path of the project the user wants to analyze"]
@@ -74,99 +108,94 @@ def show_all_files_in_dir(file_path: Annotated[str, "Directory to show files fro
     #     print(read_code(file))
     return display_tree(file_path, string_rep=True, show_hidden=True)
 
-### Tests
-def test_read_code():
-    # Let's first define the assistant agent that suggests tool calls.
-    assistant = ConversableAgent(
-        name="Assistant",
-        system_message="You are a helpful AI assistant. "
-        "You must *ALWAYS* begin by asking the user to set a project directory with set_project()"
-        "Call show_project_files() to output all the files in the current project."
-        "Call read_code(file_path) to read code from a file. "
-        "Call set_project() to set the filepath for the current project. "
-        "Call check_readme() to check if the project has a README file."
-        "Return 'TERMINATE' when the task is done."
-        "You can learn more about how a project works by using read_code() to read python code from a file.",
-        llm_config=llama_groq_config,
-        max_consecutive_auto_reply=10,
-        human_input_mode="NEVER",
-        code_execution_config=False
-    )
-
-    # The user proxy agent is used for interacting with the assistant agent
-    # and executes tool calls.
-    user_proxy = ConversableAgent(
-        name="User",
-        llm_config=False,
-        is_termination_msg=lambda msg: msg.get("content") is not None and ("TERMINATE" in msg["content"] or "USER INPUT:" in msg["content"]),
-        human_input_mode="TERMINATE",
-        code_execution_config=False,
-        max_consecutive_auto_reply=1
-    )
-
-    # Register the tool signature with the assistant agent.
-    # assistant.register_for_llm(name="read_code", description="A simple tool to read code from a file")(read_code)
-
-    # Register the tool function with the user proxy agent.
-    # user_proxy.register_for_execution(name="read_code")(read_code)
-
+def register_funcs(caller, executor):
     register_function(
         read_code,
-        caller=assistant,
-        executor=user_proxy,
+        caller=caller,
+        executor=executor,
         name="read_code",
         description="Reads code from a file."
     )
 
     register_function(
         set_project,
-        caller=assistant,
-        executor=user_proxy,
+        caller=caller,
+        executor=executor,
         name="set_project",
         description="A simple tool to set the project path."
     )
 
     register_function(
         save_code,
-        caller=assistant,
-        executor=user_proxy,
+        caller=caller,
+        executor=executor,
         name="save_code",
         description="A simple tool to save code."
     )
 
     register_function(
         check_readme,
-        caller=assistant,
-        executor=user_proxy,
+        caller=caller,
+        executor=executor,
         name="check_readme",
         description="A simple tool to checks if a README file exists."
     )
 
     register_function(
         show_all_files_in_dir,
-        caller=assistant,
-        executor=user_proxy,
+        caller=caller,
+        executor=executor,
         name="show_all_files_in_dir",
         description="Shows all the files in a directory."
     )
 
-    ### Nested chats
-    # tool_executor.register_nested_chats(
-    #     trigger=user_proxy,
-    #     chat_queue=[
-    #         {
-    #             "sender": user_proxy,
-    #             "recipient": tool_executor,
-    #             "summary_method": "last_msg",
-    #         }
-    #     ]
-    # )
-    # print(assistant.llm_config["tools"])
+
+### Tests
+def test_read_code():
+    register_funcs(caller=assistant, executor=user_proxy) 
     chat_result = assistant.initiate_chat(user_proxy, message="Please enter your project's relative path. USER INPUT:", clear_history=True, silent=False)
     # return
 
+def state_transition(last_speaker: Agent, groupchat: GroupChat):
+    # return "auto"
+    messages = groupchat.messages
+    if "tool_calls" in messages[-1]:
+        called = messages[-1]["tool_calls"][0]["function"]["name"]
+        if called in last_speaker.function_map:
+            return last_speaker
+    return "auto"
+
+def expert_chat():
+    register_funcs(assistant, user_proxy)
+    assistant.initiate_chat(user_proxy, message="What do you want to set as your project path? USER INPUT:")
+
+def test_groupchat():
+    allowed_transitions = {
+        assistant: [user_proxy, assistant],
+        user_proxy: [assistant]
+    }
+
+    register_funcs(assistant, assistant)
+
+    groupchat = GroupChat(
+        agents=[user_proxy, assistant],
+        speaker_selection_method=state_transition,
+        send_introductions=True,
+        messages=[],
+        speaker_transitions_type="allowed",
+        allowed_or_disallowed_speaker_transitions=allowed_transitions,
+        select_speaker_auto_verbose=True
+    )
+
+    manager = GroupChatManager(
+        groupchat=groupchat,
+        llm_config=llama_3_1_config,
+    )
+
+    chat_result = user_proxy.initiate_chat(manager, message="My project is at examples/calculator", clear_history=True)
+
+
 if __name__ == '__main__':
     test_read_code()
-
 
 # FIXME: show_project_files
