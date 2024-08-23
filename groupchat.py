@@ -210,10 +210,16 @@ def groupchat_yzhu_cust():
         elif last_speaker is user_proxy:
             if "NXcode" in messages[-1]["content"]:
                 return source_code_writer
+            elif "NXcodeRun" in messages[-1]["content"]:
+                return swe_executor
             elif "NXreq" in messages[-1]["content"]:
                 return requirement_writer
             elif "NXtest" in messages[-1]["content"]:
                 return test_writer
+            elif "NXteestRun" in messages[-1]["content"]:
+                return test_executor
+            else:
+                return user_proxy
         else:
             return user_proxy
 
