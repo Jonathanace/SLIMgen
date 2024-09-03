@@ -26,7 +26,7 @@ teachability = Teachability(
     path_to_db_dir="./tmp/interactive/teachability_db"  # Can be any path, but teachable agents in a group chat require unique paths.
 )
 
-teachability.add_to_agent(teachable_memory_agent
+teachability.add_to_agent(teachable_memory_agent)
 task = "What does examples/calculator/calculator.py do?"
 project_dir = ''
 
