@@ -50,15 +50,15 @@ user_proxy = UserProxyAgent(
 ### Tools
 def read_code(file_path: Annotated[str, "File or path to read code from."]) -> str:
     global project
-    if not project:
-        return 'No project directory set. Please set one and try again.'
-    file = project / file_path
+    # if not project:
+    #     return 'No project directory set. Please set one and try again.'
     
-
+    
     try:
         contents = Path(file_path).read_text()
         return contents
     except:
+        file = project / file_path
         try:
             contents = file.read_text()
         except:
