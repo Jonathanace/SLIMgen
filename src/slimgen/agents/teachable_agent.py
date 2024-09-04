@@ -11,34 +11,58 @@ from pprint import pprint
 llama_3_1_config["price"] = [0, 0]
 
 # The Number Agent always returns the same numbers.
-description_agent = ConversableAgent(
-    name="Description_Agent",
-    system_message="You write a detailed but concise description on what the following file does currently. Do NOT provide any suggestions for future improvements, or refer to anything outside of what the code already does. Start each message by repeating the file's path.",
-    llm_config=llama_3_1_config,
-    human_input_mode="NEVER",
-)
+
 # description_agent.llm_config["clear_history"] = True
 
-teachable_memory_agent = ConversableAgent(
-    name="Memory_Agent",
-    system_message="Your memorize what each file in the project does. Always remember the full filepath of each file.",
-    llm_config=llama_3_1_config,
-    human_input_mode="NEVER",
-)
-
-teachability = Teachability(
-    reset_db=True,  # Use True to force-reset the memo DB, and False to use an existing DB.
-    path_to_db_dir="./tmp/interactive/teachability_db"  # Can be any path, but teachable agents in a group chat require unique paths.
-)
-
-teachability.add_to_agent(teachable_memory_agent)
 task = "What does examples/calculator/calculator.py do?"
 project_dir = ''
+
+def train_teachable_agent(project_path, memory_path="./tmp/interactive/teachability_db", reset=False):
+    if not reset:
+        if os.path.isdir(memory_path):
+            print('Loading memory...')
+            mem_ok = True
+        else:
+            print(f'No memory found at {memory_path}')
+
+    teachable_memory_agent = ConversableAgent(
+        name="Memory_Agent",
+        system_message="Your memorize what each file in the project does. Always remember the full filepath of each file.",
+        llm_config=llama_3_1_config,
+        human_input_mode="NEVER"
+        )
+    teachability = Teachability(
+        reset_db=reset,  # Use True to force-reset the memo DB, and False to use an existing DB.
+        path_to_db_dir=memory_path  # Can be any path, but teachable agents in a group chat require unique paths.
+    )
+    teachability.add_to_agent(teachable_memory_agent)
+
+    if not mem_ok: # Train the memory agent 
+        description_agent = ConversableAgent(
+            name="Description_Agent",
+            system_message="You write a detailed but concise description on what the following file does currently. Do NOT provide any suggestions for future improvements, or refer to anything outside of what the code already does. Start each message by repeating the file's path.",
+            llm_config=llama_3_1_config,
+            human_input_mode="NEVER",
+        )
+
+        files = list(Path(project_path).rglob("*.py"))
+
+        for file in files:
+            message = f'{file}\n{read_code(file)}'
+            teachable_memory_agent.initiate_chat(description_agent, message=message, max_turns=2, silent=False)
+
+    return teachable_memory_agent
+
+    
+
+
 
 # Start a sequence of two-agent chats.
 # Each element in the list is a dictionary that specifies the arguments
 # for the initiate_chat method.
 if __name__ == "__main__":
+
+    memory_agent = train_teachable_agent("examples/unity-initiator")
     
     questions = [
         """Fill out the following README.MD template using information from the files provided to you:
@@ -206,28 +230,9 @@ Key points of contact are: [@github-user-1](link to github profile) [@github-use
     questions = ["Write a README.md file for the unity-initiator repository."]
 
     for question in questions:
+        response = memory_agent.generate_reply(messages=[{"content": question, "role": "user"}])
         pprint(question)
-
-    dir = "examples/unity-initiator"
-    files = list(Path(dir).rglob("*.py"))
-
-    teachable_memory_agent.reset()
-    description_agent.reset()
-    # files = [
-    #     'examples/calculator/calculator.py',
-    #     'examples/fibonacci/fibonacci.py'
-    # ]
-    for file in files:
-        message = f'{file}\n{read_code(file)}'
-        teachable_memory_agent.initiate_chat(description_agent, message=message, max_turns=2, silent=False)
-
-
-
-    
-    for question in questions:
-        response = teachable_memory_agent.generate_reply(messages=[{"content": question, "role": "user"}])
-        print(question)
-        print(response)
+        pprint(response)
 
 
 # Alternative method of teaching the agent 
