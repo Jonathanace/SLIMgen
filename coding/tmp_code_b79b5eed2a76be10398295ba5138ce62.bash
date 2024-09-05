@@ -1,1 +1,0 @@
-export PYTHONPATH=$PYTHONPATH:/path/to/calculator
