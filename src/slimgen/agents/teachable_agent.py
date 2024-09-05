@@ -62,6 +62,15 @@ def train_teachable_agent(project_path, memory_path="./tmp/interactive/teachabil
 # for the initiate_chat method.
 if __name__ == "__main__":
 
+    user_proxy = UserProxyAgent(
+        name="User_proxy",
+        system_message="A human admin.",
+        code_execution_config=False,
+        human_input_mode="ALWAYS",
+    )
+
+
+
     memory_agent = train_teachable_agent("examples/unity-initiator")
     
     questions = [
@@ -230,9 +239,8 @@ Key points of contact are: [@github-user-1](link to github profile) [@github-use
     questions = ["Write a README.md file for the unity-initiator repository."]
 
     for question in questions:
-        response = memory_agent.generate_reply(messages=[{"content": question, "role": "user"}])
-        pprint(question)
-        pprint(response)
+        user_proxy.initiate_chat(memory_agent, message=question)
+        memory_agent.generate_reply(message=question)
 
 
 # Alternative method of teaching the agent 
