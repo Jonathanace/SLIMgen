@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name  = "slimgen"
+dependencies = [
+    "typer"
+]
+
+[project.scripts]
+slimgen = "slimgen.cli:app"
+
+[project.entry-points."pipx.run"]
+slimgen = "slimgen.cli:app"
