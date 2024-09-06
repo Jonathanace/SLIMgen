@@ -60,3 +60,14 @@ llama_3_config = {
 
     ]
 }
+
+llama_3_1_config = {
+    "config_list": [
+        {
+            "model": "llama3.1",
+            "base_url": "http://localhost:11434/v1",
+            "api_key": "ollama"
+        }
+
+    ]
+}
