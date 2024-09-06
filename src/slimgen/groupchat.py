@@ -8,7 +8,7 @@ from autogen.coding import DockerCommandLineCodeExecutor, LocalCommandLineCodeEx
 from typing import Dict, List
 from autogen import Agent
 
-from tools import code_reader
+# from tools import code_reader
 
 def groupchat():
     task = "Analyze the code found in examples/calculator/calculator.py"
