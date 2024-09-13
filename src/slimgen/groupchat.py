@@ -1,6 +1,6 @@
 import autogen
 from autogen import register_function
-from configs import *
+from configs import llama_3_1_config, codellama_config
 from agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
@@ -96,7 +96,7 @@ def groupchat_yzhu_graph():
     # create the manager
     manager = GroupChatManager(
         groupchat=group_chat,
-        llm_config=llama_2_config,
+        llm_config=llama_3_1_config,
         is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
         code_execution_config=False,
     )
@@ -237,7 +237,7 @@ def groupchat_yzhu_cust():
     # create the manager
     manager = GroupChatManager(
         groupchat=group_chat,
-        llm_config=llama_2_config,
+        llm_config=llama_3_1_config,
         is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
         code_execution_config=False,
     )
@@ -382,7 +382,7 @@ def groupchat_raul():
    # create the manager
    manager = GroupChatManager(
        groupchat=group_chat,
-       llm_config=llama_3_config,
+       llm_config=llama_3_1_config,
        is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
        code_execution_config=False,
    )

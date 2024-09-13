@@ -1,6 +1,6 @@
 import autogen
 from autogen import UserProxyAgent, ConversableAgent
-from configs import llama_3_config
+from configs import llama_3_1_config
 
 # Create the agent that uses the LLM.
 requirement_writer = autogen.AssistantAgent(
@@ -9,7 +9,7 @@ requirement_writer = autogen.AssistantAgent(
     "and you write requirements for that code before that code is written."
     "You will list out these requirements in a numbered list."
     "You will not write the code, you will only write the requirements.",
-    llm_config=llama_3_config,
+    llm_config=llama_3_1_config,
     #description="I am responsible for writing the requirements"
 )
 
