@@ -1,11 +1,10 @@
 import typer
 
-from .main import main
-from .groupchat import groupchat_yzhu_cust
+from .groupchat import cli
 
 
 app = typer.Typer()
-app.command()(groupchat_yzhu_cust)
+app.command()(cli)
 
 
 if __name__ == "__main__":
