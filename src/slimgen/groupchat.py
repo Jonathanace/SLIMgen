@@ -7,6 +7,8 @@ from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupCh
 from autogen.coding import DockerCommandLineCodeExecutor, LocalCommandLineCodeExecutor
 from typing import Dict, List
 from autogen import Agent
+from typing import Annotated
+import typer
 
 # from tools import code_reader
 
@@ -394,5 +396,23 @@ def groupchat_raul():
        "named \"calculator.py\"",
    )
 
+def cli(
+        function: Annotated[str, typer.Option(help="The name of the tool the user wants to call")] = None,
+        prompt: Annotated[str, typer.Option(help="The user's specific query or purpose")] = None,
+):
+    print('CLI Called')
+    
+    if not function:
+        groupchat_yzhu_cust()
+    elif None:
+        # Flags TODO:
+        # - Generate-docs
+        # - Generate-tests
+        # - 
+        return 
+    
+    else:
+        # Start baseline groupchat
+        return 
 if __name__ == "__main__": 
     groupchat_yzhu_cust()
