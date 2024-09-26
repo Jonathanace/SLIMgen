@@ -7,6 +7,16 @@ import autogen
 from autogen.io.websockets import IOWebsockets
 
 from configs import llama_3_1_config
+import asyncio
+from contextlib import asynccontextmanager  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from fastapi import FastAPI  # noqa: E402
+from fastapi.responses import HTMLResponse  # noqa: E402
+import uvicorn  # noqa: E402
+
+
+PORT = 8000
 
 def on_connect(iostream: IOWebsockets) -> None:
     print(f" - on_connect(): Connected to client using IOWebsockets {iostream}", flush=True)
@@ -51,7 +61,7 @@ def on_connect(iostream: IOWebsockets) -> None:
         message=initial_msg,
     )
 
-if __name__ == "__main__":
+if False:
     with IOWebsockets.run_server_in_thread(on_connect=on_connect, port=8765) as uri:
         print(f" - test_setup() with websocket server running on {uri}.", flush=True)
 
@@ -72,3 +82,59 @@ if __name__ == "__main__":
                     print()
                     print(" - Received TERMINATE message. Exiting.", flush=True)
                     break
+
+html = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Autogen websocket test</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8080/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
+"""
+
+@asynccontextmanager
+async def run_websocket_server(app):
+    with IOWebsockets.run_server_in_thread(on_connect=on_connect, port=8080) as uri:
+        print(f"Websocket server started at {uri}.", flush=True)
+
+        yield
+
+app = FastAPI(lifespan=run_websocket_server)
+
+@app.get("/")
+async def get():
+    return HTMLResponse(html)
+
+async def main():
+    config = uvicorn.Config(app)
+    server = uvicorn.Server(config)
+    await server.serve()  # noqa: F704
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
