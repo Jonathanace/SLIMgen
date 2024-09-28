@@ -1,7 +1,7 @@
 from autogen import ConversableAgent
 import os
-from configs import llama_3_1_config
-from tools import read_code
+from .configs import llama_3_1_config
+from slimgen.tools import read_code
 from autogen import UserProxyAgent, config_list_from_json
 from autogen.agentchat.contrib.capabilities.teachability import Teachability
 import glob

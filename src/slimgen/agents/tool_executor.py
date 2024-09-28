@@ -1,6 +1,6 @@
 from tools import code_reader
 from autogen import AssistantAgent, UserProxyAgent, register_function
-from configs import llama_groq_config
+from .configs import llama_groq_config
 
 tool_executor = AssistantAgent(
     name = "Code Agent",

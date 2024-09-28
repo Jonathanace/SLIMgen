@@ -15,6 +15,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.responses import HTMLResponse  # noqa: E402
 import uvicorn  # noqa: E402
 
+from groupchat import groupchat_yzhu_cust
 
 PORT = 8000
 
@@ -24,7 +25,8 @@ def on_connect(iostream: IOWebsockets) -> None:
     print(" - on_connect(): Receiving message from client.", flush=True)
 
     # 1. Receive Initial Message
-    initial_msg = iostream.input()
+    # initial_msg = iostream.input()
+    initial_msg = None
 
     # 2. Instantiate ConversableAgent
     agent = autogen.ConversableAgent(
@@ -56,10 +58,7 @@ def on_connect(iostream: IOWebsockets) -> None:
         f" - on_connect(): Initiating chat with agent {agent} using message '{initial_msg}'",
         flush=True,
     )
-    user_proxy.initiate_chat(  # noqa: F704
-        agent,
-        message=initial_msg,
-    )
+    groupchat_yzhu_cust()
 
 if False:
     with IOWebsockets.run_server_in_thread(on_connect=on_connect, port=8765) as uri:

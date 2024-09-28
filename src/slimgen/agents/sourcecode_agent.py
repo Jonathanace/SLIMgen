@@ -1,6 +1,6 @@
 import autogen
 from autogen import UserProxyAgent, ConversableAgent
-from configs import codellama_config
+from .configs import codellama_config
 
 # Create the agent that uses the LLM.
 # assistant = ConversableAgent("agent", llm_config=local_llm_config)
