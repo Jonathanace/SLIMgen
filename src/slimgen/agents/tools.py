@@ -1,10 +1,10 @@
 import os
 from autogen import ConversableAgent, register_function, register_function, GroupChat, GroupChatManager
-from configs import llama_groq_config, llama_3_1_config, llama_groq_config, codellama_config
+from .configs import llama_groq_config, llama_3_1_config, llama_groq_config, codellama_config
 import pprint
 from typing_extensions import Annotated
 from pathlib import Path
-from directory_tree import display_tree
+# from directory_tree import display_tree
 from autogen import Agent, GroupChat, GroupChatManager, UserProxyAgent
 
 

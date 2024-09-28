@@ -5,7 +5,7 @@ from autogen import UserProxyAgent, ConversableAgent
 from pathlib import Path
 from autogen.coding import DockerCommandLineCodeExecutor
 
-from configs import codellama_config
+from .configs import codellama_config
 
 
 

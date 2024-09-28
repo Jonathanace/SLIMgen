@@ -1,14 +1,15 @@
 import autogen
 from autogen import register_function
-from configs import llama_3_1_config, codellama_config
-from agents import *
+from slimgen.agents.configs import llama_3_1_config, codellama_config
+from slimgen.agents import *
 from autogen import UserProxyAgent, ConversableAgent
 from autogen.agentchat import GroupChat, AssistantAgent, UserProxyAgent, GroupChatManager
 from autogen.coding import DockerCommandLineCodeExecutor, LocalCommandLineCodeExecutor
-from typing import Dict, List
+from typing import Dict, List, Optional
 from autogen import Agent
 from typing import Annotated
 import typer
+
 
 # from tools import code_reader
 
@@ -397,12 +398,11 @@ def groupchat_raul():
    )
 
 def cli(
-        function: Annotated[str, typer.Option(help="The name of the tool the user wants to call")] = None,
-        prompt: Annotated[str, typer.Option(help="The user's specific query or purpose")] = None,
+        usage: Annotated[Optional[str], typer.Argument(help="The name of the tool the user wants to call")] = None
 ):
     print('CLI Called')
     
-    if not function:
+    if not usage:
         groupchat_yzhu_cust()
     elif None:
         # Flags TODO:
@@ -413,6 +413,7 @@ def cli(
     
     else:
         # Start baseline groupchat
+        print(usage)
         return 
 if __name__ == "__main__": 
     groupchat_yzhu_cust()
