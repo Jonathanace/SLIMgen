@@ -7,7 +7,7 @@ dynamic = ["version"]
 name  = "slimgen"
 dependencies = [
     "typer", 
-    "pyautogen"
+    "ag2"
 ]
 
 [project.scripts]
